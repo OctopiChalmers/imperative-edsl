@@ -173,8 +173,10 @@ type CGen = CGenT Identity
 -- | Run the C code generation monad
 runCGenT :: Monad m => CGenT m a -> CEnv -> m (a, CEnv)
 runCGenT m s = do
-    Right ac <- runExceptionT (runStateT (unCGenT m) s)
-    return ac
+    ac <- runExceptionT (runStateT (unCGenT m) s)
+    case ac of
+      Right x -> return x
+      Left  s -> error $ show s
 
 -- | Run the C code generation monad
 runCGen :: CGen a -> CEnv -> (a, CEnv)
